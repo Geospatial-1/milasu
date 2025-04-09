@@ -222,7 +222,18 @@
 
         await authenticateUser(phone, password);
     });
+ // Toggle between Login and Register forms
+    document.getElementById('showRegister').addEventListener('click', (event) => {
+        event.preventDefault();
+        document.getElementById('loginForm').classList.remove('active-form');
+        document.getElementById('registerForm').classList.add('active-form');
+    });
 
+    document.getElementById('showLogin').addEventListener('click', (event) => {
+        event.preventDefault();
+        document.getElementById('registerForm').classList.remove('active-form');
+        document.getElementById('loginForm').classList.add('active-form');
+    });
     // Registration Form Submission
     document.getElementById('registerFormElement').addEventListener('submit', async (event) => {
         event.preventDefault();
