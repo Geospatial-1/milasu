@@ -160,8 +160,9 @@
     <div class="auth-container" id="authContainer">
         <div class="auth-left">
             <img src="logo.JPG" alt="Logo" style="width: 150px; margin-bottom: 2rem;">
-            <h1>Migori Land Survey Member Registration</h1>
-            <p>Welcome to the official registration portal for land survey members. Please complete your registration to access member benefits and services.</p>
+            <h1>Migori Land Survey Group </h1>
+            <h2> Account Registration form</h2>
+            <p>Welcome to the official registration portal for land survey members account. Please complete your registration to access member benefits and services.</p>
         </div>
         <div class="auth-right">
             <!-- Login Form -->
@@ -181,10 +182,10 @@
                     </div>
                     <button type="submit" class="btn btn-block">Login</button>
                 </form>
-                <p class="text-center mt-3">Don't have an account? <a href="#" class="link" id="showRegister">Register</a></p>
+                <p class="text-center mt-3">Don't have an account yet? <a href="#" class="link" id="showRegister">Register now </a></p>
             </div>
 
-            <!-- Registration Form -->
+            <!-- Account Registration Form -->
             <div class="form-container" id="registerForm">
                 <div class="form-header">
                     <h2>Create Account</h2>
@@ -209,87 +210,198 @@
             </div>
         </div>
     </div>
-
+    
+<!-- Surveyors Registration Form -->
+<div class="form-container" id="surveyForm">
+    <div class="form-header">
+        <h2>Surveyors Registration</h2>
+        <p>Complete your registration by providing the required details</p>
+    </div>
+    <form id="surveyFormElement">
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+            <label for="nationalId">National ID</label>
+            <input type="text" id="nationalId" class="form-control" placeholder="Enter your national ID" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email address" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" placeholder="e.g. +254712345678" required>
+        </div>
+        <div class="form-group">
+            <label for="qualification">Qualification</label>
+            <input type="text" id="qualification" class="form-control" placeholder="Enter your qualification" required>
+        </div>
+        <div class="form-group">
+            <label for="iskNumber">ISK Number</label>
+            <input type="text" id="iskNumber" class="form-control" placeholder="Enter your ISK number" required>
+        </div>
+        <div class="form-group">
+            <label for="transactionNumber">Transaction Number</label>
+            <input type="text" id="transactionNumber" class="form-control" placeholder="Enter your transaction number" required>
+        </div>
+        <div class="form-group">
+            <label for="idFront">ID Front</label>
+            <input type="file" id="idFront" class="form-control" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label for="idBack">ID Back</label>
+            <input type="file" id="idBack" class="form-control" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-block">Submit Registration</button>
+    </form>
+</div>
     <script>
-        const API_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbyrI_jsUMeWMr2k8JbEJm2cG3fT8ErT9ZER3okLRWAhsLS21MrcnFLe977EBCEBE5yE/exec';
+        const API_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbz64zS6tyrdyrxb1j3_4vI6U6ESAGAGLWcg3uWUfjaEDGaIIxeToqi7hsfWy_xPvGHk/exec/exec';
 
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const showRegister = document.getElementById('showRegister');
-        const showLogin = document.getElementById('showLogin');
-        const loginFormElement = document.getElementById('loginFormElement');
-        const registerFormElement = document.getElementById('registerFormElement');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const surveyForm = document.getElementById('surveyForm');
+const showRegister = document.getElementById('showRegister');
+const showLogin = document.getElementById('showLogin');
+const loginFormElement = document.getElementById('loginFormElement');
+const registerFormElement = document.getElementById('registerFormElement');
+const surveyFormElement = document.getElementById('surveyFormElement');
 
-        // Toggle between login and register forms
-        showRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.classList.remove('active-form');
-            registerForm.classList.add('active-form');
+// Initially hide the survey form
+surveyForm.classList.remove('active-form');
+
+// Toggle between login and register forms
+showRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.remove('active-form');
+    registerForm.classList.add('active-form');
+});
+
+showLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerForm.classList.remove('active-form');
+    loginForm.classList.add('active-form');
+});
+
+// Login Form Submission
+loginFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('loginPhone').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'login', phone, password })
         });
 
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
+        const data = await response.json();
+        if (data.success) {
+            alert('Login successful!');
+            loginForm.classList.remove('active-form');
+            surveyForm.classList.add('active-form'); // Show the survey form
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during login.');
+    }
+});
+
+// Registration Form Submission
+registerFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('registerPhone').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'register', phone, password })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Registration successful! Please log in.');
             registerForm.classList.remove('active-form');
             loginForm.classList.add('active-form');
+        } else {
+            alert('Registration failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during registration.');
+    }
+});
+
+// Survey Form Submission
+surveyFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fullName = document.getElementById('fullName').value;
+    const nationalId = document.getElementById('nationalId').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const qualification = document.getElementById('qualification').value;
+    const iskNumber = document.getElementById('iskNumber').value;
+    const transactionNumber = document.getElementById('transactionNumber').value;
+    const idFront = document.getElementById('idFront').files[0];
+    const idBack = document.getElementById('idBack').files[0];
+
+    // Convert files to Base64
+    const idFrontBase64 = await readFileAsBase64(idFront);
+    const idBackBase64 = await readFileAsBase64(idBack);
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'submitSurvey',
+                fullName,
+                nationalId,
+                email,
+                phone,
+                qualification,
+                iskNumber,
+                transactionNumber,
+                idFront: idFrontBase64,
+                idBack: idBackBase64
+            })
         });
 
-        // Login Form Submission
-        loginFormElement.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('loginPhone').value;
-            const password = document.getElementById('loginPassword').value;
+        const data = await response.json();
+        if (data.success) {
+            alert('Survey registration successful!');
+        } else {
+            alert('Survey registration failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during survey registration.');
+    }
+});
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', phone, password })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Login successful!');
-                } else {
-                    alert('Login failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred during login.');
-            }
-        });
-
-        // Registration Form Submission
-        registerFormElement.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('registerPhone').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'register', phone, password })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Registration successful! Please log in.');
-                    registerForm.classList.remove('active-form');
-                    loginForm.classList.add('active-form');
-                } else {
-                    alert('Registration failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred during registration.');
-            }
-        });
+// Helper function to convert file to Base64
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // Remove the Base64 prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
     </script>
 </body>
 </html>
