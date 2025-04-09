@@ -239,18 +239,63 @@
         await registerUser(phone, password);
     });
 
-    // Toggle between Login and Register forms
-    document.getElementById('showRegister').addEventListener('click', (event) => {
-        event.preventDefault();
-        document.getElementById('loginForm').classList.remove('active-form');
-        document.getElementById('registerForm').classList.add('active-form');
-    });
+    // Authenticate user
+    async function authenticateUser(phone, password) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'login',
+                    phone: phone,
+                    password: password
+                })
+            });
 
-    document.getElementById('showLogin').addEventListener('click', (event) => {
-        event.preventDefault();
-        document.getElementById('registerForm').classList.remove('active-form');
-        document.getElementById('loginForm').classList.add('active-form');
-    });
+            const data = await response.json();
+
+            if (data.success) {
+                sessionStorage.setItem('authToken', data.token);
+                sessionStorage.setItem('userPhone', phone);
+                alert('Login successful!');
+            } else {
+                alert('Login failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+        }
+    }
+
+    // Register user
+    async function registerUser(phone, password) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'register',
+                    phone: phone,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Registration successful!');
+            } else {
+                alert('Registration failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during registration');
+        }
+    }
 </script>
 </body>
 </html>
