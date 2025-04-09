@@ -213,31 +213,44 @@
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbzNFXDZN5BqhvIQ058Hu2Zp24TqhZTNL2Jie6it7TFcs30TeR5WOjX6UU2OQ5Ti7Kk6/exec'; // Replace with your Google Apps Script URL
 
-// Login Form Submission
-document.getElementById('loginFormElement').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    // Login Form Submission
+    document.getElementById('loginFormElement').addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    const phone = document.getElementById('loginPhone').value;
-    const password = document.getElementById('loginPassword').value;
+        const phone = document.getElementById('loginPhone').value;
+        const password = document.getElementById('loginPassword').value;
 
-    await authenticateUser(phone, password);
-});
+        await authenticateUser(phone, password);
+    });
 
-// Registration Form Submission
-document.getElementById('registerFormElement').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    // Registration Form Submission
+    document.getElementById('registerFormElement').addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    const phone = document.getElementById('registerPhone').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const phone = document.getElementById('registerPhone').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
-    if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-    }
+        if (password !== confirmPassword) {
+            alert('Passwords do not match!');
+            return;
+        }
 
-    await registerUser(phone, password);
-});
+        await registerUser(phone, password);
+    });
+
+    // Toggle between Login and Register forms
+    document.getElementById('showRegister').addEventListener('click', (event) => {
+        event.preventDefault();
+        document.getElementById('loginForm').classList.remove('active-form');
+        document.getElementById('registerForm').classList.add('active-form');
+    });
+
+    document.getElementById('showLogin').addEventListener('click', (event) => {
+        event.preventDefault();
+        document.getElementById('registerForm').classList.remove('active-form');
+        document.getElementById('loginForm').classList.add('active-form');
+    });
 </script>
 </body>
 </html>
