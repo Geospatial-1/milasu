@@ -235,19 +235,18 @@
         console.error('Error:', error);
         alert('An error occurred during login.');
     }
+// Toggle between login and register forms
+showRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.remove('active-form');
+    registerForm.classList.add('active-form');
 });
- // Toggle between Login and Register forms
-    document.getElementById('showRegister').addEventListener('click', (event) => {
-        event.preventDefault();
-        document.getElementById('loginForm').classList.remove('active-form');
-        document.getElementById('registerForm').classList.add('active-form');
-    });
 
-    document.getElementById('showLogin').addEventListener('click', (event) => {
-        event.preventDefault();
-        document.getElementById('registerForm').classList.remove('active-form');
-        document.getElementById('loginForm').classList.add('active-form');
-    });
+showLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerForm.classList.remove('active-form');
+    loginForm.classList.add('active-form');
+});
     
    registerFormElement.addEventListener('submit', async (e) => {
     e.preventDefault();
