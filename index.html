@@ -210,88 +210,106 @@
             </div>
         </div>
     </div>
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzNFXDZN5BqhvIQ058Hu2Zp24TqhZTNL2Jie6it7TFcs30TeR5WOjX6UU2OQ5Ti7Kk6/exec'; // Replace with your Google Apps Script URL
 
-    <script>
-        
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyP25kJLRmt19QZwZ02Gd4zsgZjRO6IONfmYujYJ-2ZDK_BF7mtnOpzydXroKOD70Yv/exec'; // Replace with your actual Google Apps Script URL
-        
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const showRegister = document.getElementById('showRegister');
-        const showLogin = document.getElementById('showLogin');
-        const loginFormElement = document.getElementById('loginFormElement');
-        const registerFormElement = document.getElementById('registerFormElement');
-
-        // Toggle between login and register forms
-        showRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.classList.remove('active-form');
-            registerForm.classList.add('active-form');
+// Authenticate user
+async function authenticateUser(phone, password) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'login',
+                phone: phone,
+                password: password
+            })
         });
 
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerForm.classList.remove('active-form');
-            loginForm.classList.add('active-form');
+        const data = await response.json();
+
+        if (data.success) {
+            sessionStorage.setItem('authToken', data.token);
+            sessionStorage.setItem('userPhone', phone);
+            alert('Login successful!');
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during login');
+    }
+}
+
+// Register user
+async function registerUser(phone, password) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'register',
+                phone: phone,
+                password: password
+            })
         });
 
-        // Login Form Submission
-        loginFormElement.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('loginPhone').value;
-            const password = document.getElementById('loginPassword').value;
+        const data = await response.json();
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', phone, password })
-                });
+        if (data.success) {
+            alert('Registration successful!');
+        } else {
+            alert('Registration failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during registration');
+    }
+}
 
-                const data = await response.json();
-                if (data.success) {
-                    alert('Login successful!');
-                } else {
-                    alert('Login failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred during login.');
-            }
+// Submit form data
+async function submitFormData(formData) {
+    try {
+        const token = sessionStorage.getItem('authToken');
+        const phone = sessionStorage.getItem('userPhone');
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'submitForm',
+                token: token,
+                phone: phone,
+                fullName: formData.fullName,
+                nationalId: formData.nationalId,
+                email: formData.email,
+                phone: formData.phone,
+                qualification: formData.qualification,
+                iskNumber: formData.iskNumber,
+                transactionNumber: formData.transactionNumber,
+                idFront: formData.idFront, // Base64 string
+                idBack: formData.idBack // Base64 string
+            })
         });
 
-        // Registration Form Submission
-        registerFormElement.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('registerPhone').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const data = await response.json();
 
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'register', phone, password })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Registration successful! Please log in.');
-                    registerForm.classList.remove('active-form');
-                    loginForm.classList.add('active-form');
-                } else {
-                    alert('Registration failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred during registration.');
-            }
-        });
-    </script>
+        if (data.success) {
+            alert('Form submitted successfully!');
+        } else {
+            alert('Submission failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during submission');
+    }
+}
+</script>
 </body>
 </html>
