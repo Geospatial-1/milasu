@@ -211,17 +211,31 @@
         </div>
     </div>
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycby1OnzOudExEG4Tn6eFmNw40ma9AMF262qua8C3RTI2_V-l9Xws2VVILtgDZvdoDS6W/exec'; // Replace with your Google Apps Script URL
+    const API_URL = 'const API_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycby1OnzOudExEG4Tn6eFmNw40ma9AMF262qua8C3RTI2_V-l9Xws2VVILtgDZvdoDS6W/exec'; // Replace with your Google Apps Script URL
 
-    // Login Form Submission
-    document.getElementById('loginFormElement').addEventListener('submit', async (event) => {
-        event.preventDefault();
+    loginFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('loginPhone').value;
+    const password = document.getElementById('loginPassword').value;
 
-        const phone = document.getElementById('loginPhone').value;
-        const password = document.getElementById('loginPassword').value;
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'login', phone, password })
+        });
 
-        await authenticateUser(phone, password);
-    });
+        const data = await response.json();
+        if (data.success) {
+            alert('Login successful!');
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during login.');
+    }
+});
  // Toggle between Login and Register forms
     document.getElementById('showRegister').addEventListener('click', (event) => {
         event.preventDefault();
@@ -234,21 +248,37 @@
         document.getElementById('registerForm').classList.remove('active-form');
         document.getElementById('loginForm').classList.add('active-form');
     });
-    // Registration Form Submission
-    document.getElementById('registerFormElement').addEventListener('submit', async (event) => {
-        event.preventDefault();
+   registerFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('registerPhone').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
-        const phone = document.getElementById('registerPhone').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
 
-        if (password !== confirmPassword) {
-            alert('Passwords do not match!');
-            return;
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'register', phone, password })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Registration successful! Please log in.');
+            registerForm.classList.remove('active-form');
+            loginForm.classList.add('active-form');
+        } else {
+            alert('Registration failed: ' + data.message);
         }
-
-        await registerUser(phone, password);
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during registration.');
+    }
+});
 
     // Authenticate user
     async function authenticateUser(phone, password) {
