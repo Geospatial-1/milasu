@@ -3,408 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milasu group member Registration Portal</title>
+    <title>Msaidizi Kenya - Find Trusted House Help</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --success-color: #27ae60;
-            --font-primary: 'Montserrat', sans-serif;
-            --font-secondary: 'Playfair Display', serif;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-primary);
-            background-color: #f5f7fa;
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
-
-        .auth-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .auth-left {
-            flex: 1;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .auth-left h1 {
-            font-family: var(--font-secondary);
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .auth-left p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 500px;
-        }
-
-        .auth-right {
-            flex: 1;
-            background-color: white;
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .form-container {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .active-form {
-            display: block;
-        }
-
-        .form-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .form-header h2 {
-            font-family: var(--font-secondary);
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-header p {
-            color: #7f8c8d;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-            outline: none;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-
-        .btn-accent:hover {
-            background-color: #c0392b;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { font-family: Arial, sans-serif; }
+        .hero { background: #2E8B57; color: white; padding: 60px 0; }
+        .btn-primary { background: #FFA500; border: none; }
+        .btn-secondary { background: #333333; }
     </style>
 </head>
 <body>
-    <div class="auth-container" id="authContainer">
-        <div class="auth-left">
-            <img src="logo.JPG" alt="Logo" style="width: 150px; margin-bottom: 2rem;">
-            <h1>Migori Land Survey Group </h1>
-            <h2> Account Registration form</h2>
-            <p>Welcome to the official registration portal for land survey members account. Please complete your registration to access member benefits and services.</p>
-        </div>
-        <div class="auth-right">
-            <!-- Login Form -->
-            <div class="form-container active-form" id="loginForm">
-                <div class="form-header">
-                    <h2>Account Login</h2>
-                    <p>login with your phone number and password to access the group member registration form</p>
-                </div>
-                <form id="loginFormElement">
-                    <div class="form-group">
-                        <label for="loginPhone">Phone Number</label>
-                        <input type="tel" id="loginPhone" class="form-control" placeholder="e.g. +254712345678" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
-                    </div>
-                    <button type="submit" class="btn btn-block">Login</button>
-                </form>
-                <p class="text-center mt-3">Don't have an account yet? <a href="#" class="link" id="showRegister">Register now </a></p>
-            </div>
-
-            <!-- Account Registration Form -->
-            <div class="form-container" id="registerForm">
-                <div class="form-header">
-                    <h2>Create Account</h2>
-                    <p>Register with your phone number to access the member portal</p>
-                    <p>For problem with login kindly contact admin by whatsapp</p>
-                </div>
-                <form id="registerFormElement">
-                    <div class="form-group">
-                        <label for="registerPhone">Phone Number</label>
-                        <input type="tel" id="registerPhone" class="form-control" placeholder="e.g. +254712345678" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Password</label>
-                        <input type="password" id="registerPassword" class="form-control" placeholder="Create a password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerConfirmPassword">Confirm Password</label>
-                        <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirm your password" required>
-                    </div>
-                    <button type="submit" class="btn btn-block">Register</button>
-                </form>
-                <p class="text-center mt-3">Already have an account? <a href="#" class="link" id="showLogin">Login</a></p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Msaidizi Kenya</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#register">Register</a></li>
+                </ul>
             </div>
         </div>
-    </div>
-    
-<!-- Surveyors Registration Form -->
-<div class="form-container" id="surveyForm">
-    <div class="form-header">
-        <h2>Surveyors Registration</h2>
-        <p>Complete your registration by providing the required details accurately</p>
-    </div>
-    <form id="surveyFormElement">
-        <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero text-center">
+        <div class="container">
+            <h1>Find Trusted House Help in Kenya</h1>
+            <p class="lead">Connecting homeowners with verified domestic workers</p>
+            <a href="#register" class="btn btn-primary btn-lg">Get Started</a>
         </div>
-        <div class="form-group">
-            <label for="nationalId">National ID</label>
-            <input type="text" id="nationalId" class="form-control" placeholder="Enter your national ID" required>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">How It Works</h2>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <h3>1. Register</h3>
+                    <p>Sign up as a homeowner or helper</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h3>2. Match</h3>
+                    <p>We connect you with the best candidates</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h3>3. Hire</h3>
+                    <p>Secure contracts with peace of mind</p>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" class="form-control" placeholder="Enter your email address" required>
+    </section>
+
+    <!-- Registration Section -->
+    <section id="register" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Register Now</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <h3>I Need Help</h3>
+                            <p>Find a trusted house-help</p>
+                            <button onclick="showForm('employer')" class="btn btn-primary">Homeowner Sign Up</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <h3>I Want Work</h3>
+                            <p>Get hired as a professional helper</p>
+                            <button onclick="showForm('helper')" class="btn btn-secondary">Helper Sign Up</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Form (Shown when button clicked) -->
+            <div id="registrationForm" class="mt-4" style="display: none;">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 id="formTitle">Sign Up</h4>
+                        <form id="signupForm">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <input type="hidden" id="userType">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" class="form-control" placeholder="e.g. +254712345678" required>
-        </div>
-        <div class="form-group">
-            <label for="qualification">Qualification</label>
-            <input type="text" id="qualification" class="form-control" placeholder="Enter your qualification" required>
-        </div>
-        <div class="form-group">
-            <label for="iskNumber">ISK Number</label>
-            <input type="text" id="iskNumber" class="form-control" placeholder="Enter your ISK number" required>
-        </div>
-        <div class="form-group">
-            <label for="transactionNumber">Transaction Number</label>
-            <input type="text" id="transactionNumber" class="form-control" placeholder="Enter your transaction number" required>
-        </div>
-        <div class="form-group">
-            <label for="idFront">ID Front</label>
-            <input type="file" id="idFront" class="form-control" accept="image/*" required>
-        </div>
-        <div class="form-group">
-            <label for="idBack">ID Back</label>
-            <input type="file" id="idBack" class="form-control" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-block">Submit Registration</button>
-    </form>
-</div>
-    <script src="coi-serviceworker.js"></script>
+    </section>
 
-    <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw-cWJcA6r5sF-hsXKv6Zp0S0PQb3Zp0qj_NgaV5UgpUAPMcVy5EePsJ4mHjHJs3nQD/exec';
-
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const surveyForm = document.getElementById('surveyForm');
-const showRegister = document.getElementById('showRegister');
-const showLogin = document.getElementById('showLogin');
-const loginFormElement = document.getElementById('loginFormElement');
-const registerFormElement = document.getElementById('registerFormElement');
-const surveyFormElement = document.getElementById('surveyFormElement');
-
-// Initially hide the survey form
-surveyForm.classList.remove('active-form');
-
-// Toggle between login and register forms
-showRegister.addEventListener('click', (e) => {
-    e.preventDefault();
-    loginForm.classList.remove('active-form');
-    registerForm.classList.add('active-form');
-});
-
-showLogin.addEventListener('click', (e) => {
-    e.preventDefault();
-    registerForm.classList.remove('active-form');
-    loginForm.classList.add('active-form');
-});
-
-// Login Form Submission
-loginFormElement.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const phone = document.getElementById('loginPhone').value;
-    const password = document.getElementById('loginPassword').value;
-
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'login', phone, password })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            alert('Login successful!');
-            loginForm.classList.remove('active-form');
-            surveyForm.classList.add('active-form'); // Show the survey form
-        } else {
-            alert('Login failed: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during login.');
-    }
-});
-
-// Registration Form Submission
-registerFormElement.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const phone = document.getElementById('registerPhone').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-    if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-    }
-
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'register', phone, password })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            alert('Registration successful! Please log in.');
-            registerForm.classList.remove('active-form');
-            loginForm.classList.add('active-form');
-        } else {
-            alert('Registration failed: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during registration.');
-    }
-});
-
-// Survey Form Submission
-surveyFormElement.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const fullName = document.getElementById('fullName').value;
-    const nationalId = document.getElementById('nationalId').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const qualification = document.getElementById('qualification').value;
-    const iskNumber = document.getElementById('iskNumber').value;
-    const transactionNumber = document.getElementById('transactionNumber').value;
-    const idFront = document.getElementById('idFront').files[0];
-    const idBack = document.getElementById('idBack').files[0];
-
-    // Convert files to Base64
-    const idFrontBase64 = await readFileAsBase64(idFront);
-    const idBackBase64 = await readFileAsBase64(idBack);
-
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'submitSurvey',
-                fullName,
-                nationalId,
-                email,
-                phone,
-                qualification,
-                iskNumber,
-                transactionNumber,
-                idFront: idFrontBase64,
-                idBack: idBackBase64
-            })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            alert('Survey registration successful!');
-        } else {
-            alert('Survey registration failed: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during survey registration.');
-    }
-});
-
-// Helper function to convert file to Base64
-function readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Remove the Base64 prefix
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-    </script>
+    <!-- Firebase and JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
