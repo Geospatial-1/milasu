@@ -2,27 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Helper Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container">
             <a class="navbar-brand" href="#">Msaidizi Kenya</a>
-            <button class="btn btn-light" onclick="logout()">Logout</button>
+            <div>
+                <a href="file-dispute.html" class="btn btn-warning btn-sm me-2">Report Issue</a>
+                <button onclick="logout()" class="btn btn-light btn-sm">Logout</button>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container my-4">
         <div class="row">
-            <!-- Profile Section -->
+            <!-- Profile Card -->
             <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>My Profile</h5>
-                        <div id="profileInfo"></div>
-                        <button class="btn btn-sm btn-primary mt-2" onclick="showEditProfile()">Edit Profile</button>
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="images/profile-placeholder.png" class="rounded-circle mb-3" width="100">
+                        <h5 id="helperName">Loading...</h5>
+                        <p class="text-muted" id="helperSkills"></p>
+                        <a href="edit-profile.html" class="btn btn-outline-primary btn-sm">Edit Profile</a>
                     </div>
                 </div>
             </div>
@@ -30,47 +34,28 @@
             <!-- Job Search -->
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-header bg-dark text-white">
                         <h5>Available Jobs</h5>
-                        <div class="mb-3">
-                            <input type="text" id="searchLocation" placeholder="Filter by location" class="form-control">
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" id="searchLocation" placeholder="Location" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <button onclick="loadJobs()" class="btn btn-success w-100">Search</button>
+                            </div>
                         </div>
-                        <div id="jobList"></div>
+                        <div id="jobResults"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit Profile Modal -->
-    <div class="modal fade" id="editProfileModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Profile</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="profileForm">
-                        <div class="mb-3">
-                            <label class="form-label">Skills</label>
-                            <input type="text" class="form-control" id="skills" placeholder="Cleaning, Cooking, Childcare">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
     <script>
-        // Load profile and jobs on page load
+        // Load profile and jobs
         auth.onAuthStateChanged(user => {
             if (!user) window.location.href = 'index.html';
             else {
@@ -82,32 +67,33 @@
         function loadProfile() {
             db.collection('helpers').doc(auth.currentUser.uid).get()
                 .then(doc => {
-                    const profile = doc.data();
-                    document.getElementById('profileInfo').innerHTML = `
-                        <p><strong>Name:</strong> ${profile.name}</p>
-                        <p><strong>Phone:</strong> ${profile.phone}</p>
-                        <p><strong>Skills:</strong> ${profile.skills?.join(', ') || 'Not specified'}</p>
-                    `;
+                    const data = doc.data();
+                    document.getElementById('helperName').textContent = data.name;
+                    document.getElementById('helperSkills').textContent = data.skills?.join(', ') || 'No skills listed';
                 });
         }
 
         function loadJobs() {
             const location = document.getElementById('searchLocation').value;
+            
             searchJobs({ location }).then(snapshot => {
-                let jobsHTML = '';
+                let html = '';
                 snapshot.forEach(doc => {
                     const job = doc.data();
-                    jobsHTML += `
-                        <div class="card mb-2">
+                    html += `
+                        <div class="card mb-3">
                             <div class="card-body">
-                                <h6>${job.title}</h6>
+                                <h5>${job.title}</h5>
                                 <p>${job.description}</p>
-                                <button onclick="applyJob('${doc.id}')" class="btn btn-sm btn-success">Apply</button>
+                                <div class="d-flex justify-content-between">
+                                    <span class="badge bg-primary">${job.location || 'N/A'}</span>
+                                    <button onclick="applyJob('${doc.id}')" class="btn btn-sm btn-success">Apply</button>
+                                </div>
                             </div>
                         </div>
                     `;
                 });
-                document.getElementById('jobList').innerHTML = jobsHTML || '<p>No jobs found</p>';
+                document.getElementById('jobResults').innerHTML = html || '<p>No jobs found</p>';
             });
         }
 
@@ -118,10 +104,6 @@
                 status: 'pending',
                 appliedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => alert('Application submitted!'));
-        }
-
-        function logout() {
-            auth.signOut().then(() => window.location.href = 'index.html');
         }
     </script>
 </body>
