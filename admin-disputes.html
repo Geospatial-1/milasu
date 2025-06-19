@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dispute Resolution</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 text-white">Admin Panel</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Disputes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin-users.html">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin-jobs.html">Jobs</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between pt-3 pb-2 mb-3 border-bottom">
+                    <h2>Dispute Resolution</h2>
+                    <div class="btn-toolbar">
+                        <select id="disputeFilter" class="form-select me-2" onchange="loadDisputes()">
+                            <option value="open">Open Disputes</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Complainant</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disputesTable">
+                            <!-- Disputes will load here -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Dispute Modal -->
+    <div class="modal fade" id="disputeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dispute Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="disputeContent"></div>
+                    <hr>
+                    <h5>Resolution Notes</h5>
+                    <div id="disputeNotes" class="mb-3"></div>
+                    <form id="addNoteForm">
+                        <textarea class="form-control mb-2" placeholder="Add resolution note..." required></textarea>
+                        <button type="submit" class="btn btn-primary">Add Note</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <select id="statusUpdate" class="form-select me-2">
+                        <option value="open">Open</option>
+                        <option value="under_review">Under Review</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <button type="button" class="btn btn-success" onclick="updateDisputeStatus()">Update Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        const disputeModal = new bootstrap.Modal(document.getElementById('disputeModal'));
+        let currentDisputeId = null;
+
+        // Load disputes on page load
+        auth.onAuthStateChanged(user => {
+            if (!user) window.location.href = 'index.html';
+            else loadDisputes();
+        });
+
+        function loadDisputes() {
+            const status = document.getElementById('disputeFilter').value;
+            
+            getDisputes(status).then(snapshot => {
+                let html = '';
+                snapshot.forEach(doc => {
+                    const dispute = doc.data();
+                    html += `
+                        <tr onclick="viewDispute('${doc.id}')">
+                            <td>${doc.id.substring(0, 6)}</td>
+                            <td>${dispute.type}</td>
+                            <td>${dispute.complainant.substring(0, 6)}...</td>
+                            <td>${dispute.createdAt?.toDate().toLocaleDateString()}</td>
+                            <td>
+                                <span class="badge bg-${getStatusColor(dispute.status)}">
+                                    ${dispute.status.replace('_', ' ')}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('disputesTable').innerHTML = html || '<tr><td colspan="5">No disputes found</td></tr>';
+            });
+        }
+
+        function viewDispute(disputeId) {
+            currentDisputeId = disputeId;
+            
+            db.collection('disputes').doc(disputeId).get().then(doc => {
+                const dispute = doc.data();
+                
+                // Load dispute details
+                document.getElementById('disputeContent').innerHTML = `
+                    <h6>${dispute.type.toUpperCase()} DISPUTE</h6>
+                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(dispute.status)}">
+                        ${dispute.status.replace('_', ' ')}
+                    </span></p>
+                    <p><strong>Description:</strong></p>
+                    <p>${dispute.description}</p>
+                    
+                    ${dispute.evidence?.length ? `
+                        <p><strong>Evidence:</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${dispute.evidence.map(url => `
+                                <a href="${url}" target="_blank">
+                                    <img src="${url}" class="img-thumbnail" style="max-height: 100px;">
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                // Set current status
+                document.getElementById('statusUpdate').value = dispute.status;
+                
+                // Load notes
+                loadDisputeNotes(disputeId);
+                
+                // Show modal
+                disputeModal.show();
+            });
+        }
+
+        function loadDisputeNotes(disputeId) {
+            db.collection('disputes').doc(disputeId)
+                .collection('notes')
+                .orderBy('createdAt', 'asc')
+                .get().then(snapshot => {
+                    let notesHTML = '';
+                    snapshot.forEach(doc => {
+                        const note = doc.data();
+                        notesHTML += `
+                            <div class="card mb-2 ${note.isAdminNote ? 'bg-light' : ''}">
+                                <div class="card-body">
+                                    <p>${note.message}</p>
+                                    <small class="text-muted">
+                                        ${note.isAdminNote ? 'Admin' : 'User'} • 
+                                        ${new Date(note.createdAt?.toDate()).toLocaleString()}
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('disputeNotes').innerHTML = notesHTML || '<p>No notes yet</p>';
+                });
+        }
+
+        function updateDisputeStatus() {
+            const newStatus = document.getElementById('statusUpdate').value;
+            
+            db.collection('disputes').doc(currentDisputeId).update({
+                status: newStatus,
+                resolvedAt: newStatus === 'resolved' ? firebase.firestore.FieldValue.serverTimestamp() : null
+            }).then(() => {
+                loadDisputes();
+                disputeModal.hide();
+            });
+        }
+
+        // Helper function
+        function getStatusColor(status) {
+            switch(status) {
+                case 'open': return 'warning';
+                case 'under_review': return 'info';
+                case 'resolved': return 'success';
+                default: return 'secondary';
+            }
+        }
+    </script>
+</body>
+</html>
