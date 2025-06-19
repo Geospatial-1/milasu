@@ -1,4 +1,4 @@
-// Firebase Config (Replace with your own)
+they// Firebase Config (Replace with your own)
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -51,3 +51,35 @@ document.getElementById('signupForm').addEventListener('submit', (e) => {
             alert('Error: ' + error.message);
         });
 });
+// ===== DISPUTE FUNCTIONS =====
+function fileDispute(disputeData) {
+    return db.collection('disputes').add({
+        ...disputeData,
+        status: 'open',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
+
+function addDisputeNote(disputeId, noteData) {
+    return db.collection('disputes').doc(disputeId)
+        .collection('notes').add({
+            ...noteData,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+}
+
+function updateDisputeStatus(disputeId, newStatus) {
+    return db.collection('disputes').doc(disputeId).update({
+        status: newStatus,
+        resolvedAt: newStatus === 'resolved' ? 
+            firebase.firestore.FieldValue.serverTimestamp() : null
+    });
+}
+
+// ===== EVIDENCE UPLOAD =====
+async function uploadEvidence(file) {
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child(`evidence/${Date.now()}_${file.name}`);
+    await fileRef.put(file);
+    return await fileRef.getDownloadURL();
+}
