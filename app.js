@@ -83,3 +83,25 @@ async function uploadEvidence(file) {
     await fileRef.put(file);
     return await fileRef.getDownloadURL();
 }
+// disputes collection
+{
+  id: "auto-generated",
+  jobId: "job123",       // Reference to the job in question
+  complainant: "user123", // User ID who filed the dispute
+  defendant: "user456",  // User ID being reported
+  type: "payment|conduct|termination",
+  description: "Employer refused to pay final wages",
+  status: "open|under_review|resolved",
+  createdAt: "timestamp",
+  resolvedAt: "timestamp",
+  resolution: "text",
+  evidence: ["url1", "url2"] // Image URLs
+}
+
+// resolution_notes subcollection
+{
+  author: "admin123", // Could be admin or party
+  message: "Please provide more evidence",
+  createdAt: "timestamp",
+  isAdminNote: true
+});
