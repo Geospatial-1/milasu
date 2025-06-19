@@ -1,57 +1,59 @@
-they// Firebase Config (Replace with your own)
+// Firebase Configuration
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
     projectId: "YOUR_PROJECT_ID",
     storageBucket: "YOUR_BUCKET.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef123456"
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
-// Show Registration Form
-function showForm(userType) {
-    document.getElementById('registrationForm').style.display = 'block';
-    document.getElementById('userType').value = userType;
-    document.getElementById('formTitle').innerText = userType === 'employer' ? 'Homeowner Sign Up' : 'Helper Sign Up';
+// ========== AUTHENTICATION ========== //
+function registerUser(userType, userData) {
+    return auth.createUserWithEmailAndPassword(userData.email, userData.password)
+        .then((userCredential) => {
+            return db.collection(userType + 's').doc(userCredential.user.uid).set({
+                ...userData,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'active'
+            });
+        });
 }
 
-// Handle Form Submission
-document.getElementById('signupForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const password = document.getElementById('password').value;
-    const userType = document.getElementById('userType').value;
+function login(email, password) {
+    return auth.signInWithEmailAndPassword(email, password);
+}
 
-    // Create user in Firebase Auth
-    auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            
-            // Save additional data to Firestore
-            return db.collection(userType + 's').doc(user.uid).set({
-                name: name,
-                email: email,
-                phone: phone,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        })
-        .then(() => {
-            alert('Registration successful!');
-            window.location.href = userType === 'employer' ? 'employer-dashboard.html' : 'helper-dashboard.html';
-        })
-        .catch((error) => {
-            alert('Error: ' + error.message);
-        });
-});
-// ===== DISPUTE FUNCTIONS =====
+function logout() {
+    return auth.signOut();
+}
+
+// ========== JOB MANAGEMENT ========== //
+function postJob(jobData) {
+    return db.collection('jobs').add({
+        ...jobData,
+        postedBy: auth.currentUser.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'open'
+    });
+}
+
+function searchJobs(filters = {}) {
+    let query = db.collection('jobs').where('status', '==', 'open');
+    
+    if (filters.location) query = query.where('location', '==', filters.location);
+    if (filters.skills) query = query.where('skills', 'array-contains', filters.skills);
+    
+    return query.get();
+}
+
+// ========== DISPUTE SYSTEM ========== //
 function fileDispute(disputeData) {
     return db.collection('disputes').add({
         ...disputeData,
@@ -60,48 +62,50 @@ function fileDispute(disputeData) {
     });
 }
 
-function addDisputeNote(disputeId, noteData) {
-    return db.collection('disputes').doc(disputeId)
-        .collection('notes').add({
-            ...noteData,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+function getDisputes(status = 'open') {
+    return db.collection('disputes')
+        .where('status', '==', status)
+        .orderBy('createdAt', 'desc')
+        .get();
 }
 
-function updateDisputeStatus(disputeId, newStatus) {
-    return db.collection('disputes').doc(disputeId).update({
-        status: newStatus,
-        resolvedAt: newStatus === 'resolved' ? 
-            firebase.firestore.FieldValue.serverTimestamp() : null
+// ========== UTILITIES ========== //
+function uploadFile(file, path) {
+    const storageRef = storage.ref(path + '/' + Date.now() + '_' + file.name);
+    return storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL());
+}
+
+function collectFormData(formElement) {
+    const formData = new FormData(formElement);
+    return Object.fromEntries(formData.entries());
+}
+
+// Initialize auth state listener
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // Check user type and redirect
+        db.collection('admins').doc(user.uid).get()
+            .then(doc => {
+                if (doc.exists) window.location.href = 'admin.html';
+            });
+        
+        db.collection('helpers').doc(user.uid).get()
+            .then(doc => {
+                if (doc.exists) window.location.href = 'helper-dash.html';
+            });
+        
+        db.collection('employers').doc(user.uid).get()
+            .then(doc => {
+                if (doc.exists) window.location.href = 'employer-dash.html';
+            });
+    }
+});
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed'));
     });
 }
-
-// ===== EVIDENCE UPLOAD =====
-async function uploadEvidence(file) {
-    const storageRef = firebase.storage().ref();
-    const fileRef = storageRef.child(`evidence/${Date.now()}_${file.name}`);
-    await fileRef.put(file);
-    return await fileRef.getDownloadURL();
-}
-// disputes collection
-{
-  id: "auto-generated",
-  jobId: "job123",       // Reference to the job in question
-  complainant: "user123", // User ID who filed the dispute
-  defendant: "user456",  // User ID being reported
-  type: "payment|conduct|termination",
-  description: "Employer refused to pay final wages",
-  status: "open|under_review|resolved",
-  createdAt: "timestamp",
-  resolvedAt: "timestamp",
-  resolution: "text",
-  evidence: ["url1", "url2"] // Image URLs
-}
-
-// resolution_notes subcollection
-{
-  author: "admin123", // Could be admin or party
-  message: "Please provide more evidence",
-  createdAt: "timestamp",
-  isAdminNote: true
-});
